@@ -1,0 +1,148 @@
+        /* Paleta de Cores e Variáveis */
+        :root {
+            --primary-bg: #f5f7fa;
+            --dark: #2c3e50;
+            --light: #fff;
+            --shadow: rgba(0,0,0,0.1);
+            
+            /* Cores dos Botões (inspiradas na foto) */
+            --grad-vendas: linear-gradient(135deg, #2ecc71 0%, #34b7f1 100%); /* Verde -> Azul */
+            --grad-produtos: linear-gradient(135deg, #9b59b6 0%, #34495e 100%); /* Roxo -> Azul Escuro */
+            --grad-resumo: linear-gradient(135deg, #e67e22 0%, #ff6b6b 100%); /* Laranja -> Rosa Claro */
+            --grad-historico: linear-gradient(135deg, #d35400 0%, #c0392b 100%); /* Laranja Escuro -> Vermelho */
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--primary-bg);
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* Cabeçalho do App */
+        .app-header {
+            background-color: var(--light);
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .app-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+        }
+
+        .app-subtitle {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        /* Área de Conteúdo Central */
+        .content-area {
+            flex-grow: 1;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Estilo do Botão Principal (A "Cara do App") */
+        .main-button {
+            width: 100%;
+            max-width: 350px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 20px;
+            border: none;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: white;
+        }
+
+        .main-button:last-child { margin-bottom: 0; }
+
+        /* Efeitos de Interação */
+        .main-button:active {
+            transform: translateY(3px) scale(0.98);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        /* Cores de Fundo dos Botões */
+        .btn-vendas { background: var(--grad-vendas); }
+        .btn-produtos { background: var(--grad-produtos); }
+        .btn-resumo { background: var(--grad-resumo); }
+        .btn-historico { background: var(--grad-historico); }
+
+        /* Ícones e Texto dentro do Botão */
+        .button-icon-container {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-button i.material-icons {
+            font-size: 32px;
+            color: white;
+        }
+
+        .button-text-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .button-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .button-desc {
+            font-size: 13px;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        /* Ícone de Seta (indicador de navegação) */
+        .button-arrow {
+            font-size: 24px;
+            opacity: 0.6;
+        }
+
+        /* Rodapé Simples */
+        .app-footer {
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #95a5a6;
+        }
