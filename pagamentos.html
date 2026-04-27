@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DFL Gestão Financeira - Formas PGTO</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <header class="app-header">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="index.html" style="text-decoration: none; color: var(--dark);">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <h1 class="app-title" style="font-size: 20px;">FORMAS DE PAGAMENTO</h1>
+            <div style="width: 24px;"></div> </div>
+            <p class="app-subtitle">DFL - Gestão Inteligente de Gastos</p>
+    </header>
+
+    <main class="content-area" style="justify-content: flex-start;">
+        <div style="width: 100%; margin-bottom: 30px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Nome da Forma de Pagamento</label>
+            <input type="text" id="nome-pagamento" placeholder="Ex: Pix, Cartão de Crédito, Dinheiro" 
+                   style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px;">
+            
+            <button id="btn-salvar" class="main-button btn-vendas" style="margin-top: 15px; padding: 15px;">
+                <div class="button-icon-container" style="padding: 10px;">
+                    <i class="material-icons">save</i>
+                </div>
+                <span class="button-title">Salvar Forma</span>
+            </button>
+        </div>
+
+        <div style="width: 100%;">
+            <h2 style="font-size: 18px; border-bottom: 2px solid var(--primary-bg); padding-bottom: 10px;">Cadastradas</h2>
+            <ul id="lista-pagamentos" style="list-style: none; padding: 0; width: 100%;">
+                </ul>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p class="footer-text">© 2024 Pro Estoque Max | Gestão Total</p>
+    </footer>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
