@@ -5,12 +5,27 @@ window.onload = carregarFormasPagamento;
 
 function carregarFormasPagamento() {
     const listaUl = document.getElementById('lista-pagamentos');
+    if (!listaUl) return;
     listaUl.innerHTML = "<p>Carregando...</p>";
 
-    fetch(scriptURL)
+    // ADICIONADO: tabName=FORMA PGMT para o Google saber onde buscar
+    fetch(`${scriptURL}?tabName=FORMA PGMT`)
         .then(res => res.json())
         .then(dados => {
             listaUl.innerHTML = "";
+
+            // SEGURANÇA: Verifica se recebemos uma lista ou um erro
+            if (!Array.isArray(dados)) {
+                console.error("Erro do Google:", dados);
+                listaUl.innerHTML = "<p>Erro ao carregar dados da planilha.</p>";
+                return;
+            }
+
+            if (dados.length === 0) {
+                listaUl.innerHTML = "<p>Nenhuma forma cadastrada.</p>";
+                return;
+            }
+
             dados.forEach(item => {
                 const li = document.createElement('li');
                 li.style = "background: white; margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
@@ -26,6 +41,10 @@ function carregarFormasPagamento() {
                 `;
                 listaUl.appendChild(li);
             });
+        })
+        .catch(err => {
+            listaUl.innerHTML = "<p>Erro de conexão.</p>";
+            console.error(err);
         });
 }
 
@@ -56,6 +75,7 @@ document.getElementById('btn-salvar').addEventListener('click', function() {
 
     const payload = {
         action: id ? "update" : "create",
+        tabName: "FORMA PGMT", // ADICIONADO: tabName no POST também
         id: id,
         nome: nome
     };
@@ -71,14 +91,15 @@ document.getElementById('btn-salvar').addEventListener('click', function() {
             limparFormulario();
             carregarFormasPagamento();
         } else {
-            alert(data.message);
+            alert("Erro: " + (data.message || "Verifique a planilha"));
         }
     });
 });
 
 function excluirForma(id) {
     if (confirm("Deseja realmente excluir esta forma?")) {
-        fetch(scriptURL + "?action=delete&id=" + id)
+        // ADICIONADO: tabName na exclusão via GET
+        fetch(`${scriptURL}?action=delete&id=${id}&tabName=FORMA PGMT`)
         .then(() => {
             alert("Excluído com sucesso!");
             carregarFormasPagamento();

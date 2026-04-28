@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DFL - Cadastro de Contas</title>
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css"> 
+</head>
+<body>
+
+<div class="app-container">
+    <header class="app-header">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <a href="index.html" style="text-decoration: none; color: var(--dark);">
+                <i class="material-icons">arrow_back</i>
+            </a>
+            <h1 class="app-title" style="font-size: 20px;">CADASTRO DE CONTAS</h1>
+            <div style="width: 24px;"></div> 
+        </div>
+        <p class="app-subtitle">Gestão de Bancos e Caixas</p>
+    </header>
+
+    <main class="content-area" style="justify-content: flex-start; padding: 20px;">
+        <div class="form-container" style="width: 100%; margin-bottom: 30px;">
+            <input type="hidden" id="id-conta">
+            
+            <div class="input-group">
+                <label>DESCRIÇÃO DA CONTA</label>
+                <input type="text" id="nome-conta" placeholder="Ex: Santander, Itaú, Carteira..." class="input-estilizado">
+            </div>
+
+            <div class="input-group">
+                <label>TIPO DE CONTA</label>
+                <div style="display: flex; gap: 15px; margin-top: 5px;">
+                    <label class="radio-label">
+                        <input type="radio" name="tipo-conta" value="RECEITA" id="tipo-receita"> <span>Receita</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="tipo-conta" value="DESPESA" id="tipo-despesa"> <span>Despesa</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>VINCULAR AO SUBMENU</label>
+                <select id="select-submenu" class="input-estilizado">
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>OBSERVAÇÕES (OPCIONAL)</label>
+                <input type="text" id="obs1" placeholder="Observação 1" class="input-estilizado" style="margin-bottom: 8px;">
+                <input type="text" id="obs2" placeholder="Observação 2" class="input-estilizado">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-salvar-conta" class="main-button btn-historico" style="margin-top: 15px; flex: 4;">
+                    <span class="button-title">Salvar Conta</span>
+                </button>
+                <button id="btn-cancelar" style="margin-top: 15px; flex: 1; display: none; background: #e74c3c; color: white; border: none; border-radius: 15px; cursor: pointer;">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+        </div>
+
+        <div style="width: 100%;">
+            <h2 style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">CONTAS CADASTRADAS</h2>
+            <ul id="lista-contas" style="list-style: none; padding: 0;"></ul>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p class="footer-text">© 2026 DFL Gestão | Danilo Damião</p>
+    </footer>
+</div>
+
+<script src="./js/contas.js"></script>
+
+</body>
+</html>
