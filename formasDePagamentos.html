@@ -16,28 +16,33 @@
                 <i class="material-icons">arrow_back</i>
             </a>
             <h1 class="app-title" style="font-size: 20px;">FORMAS DE PAGAMENTO</h1>
-            <div style="width: 24px;"></div> </div>
-            <p class="app-subtitle">DFL - Gestão Inteligente de Gastos</p>
+            <div style="width: 24px;"></div> 
+        </div>
+        <p class="app-subtitle">DFL - Gestão Inteligente de Gastos</p>
     </header>
 
     <main class="content-area" style="justify-content: flex-start;">
         <div style="width: 100%; margin-bottom: 30px;">
-            <label style="font-weight: bold; display: block; margin-bottom: 8px;">Forma de Pagamento</label>
+            <input type="hidden" id="id-pagamento">
+            
+            <label id="label-input" style="font-weight: bold; display: block; margin-bottom: 8px;">Nova Forma de Pagamento</label>
             <input type="text" id="nome-pagamento" placeholder="Ex: Pix, Cartão de Crédito, Dinheiro" 
                    style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px;">
             
-            <button id="btn-salvar" class="main-button btn-vendas" style="margin-top: 15px; padding: 15px;">
-                <div class="button-icon-container" style="padding: 10px;">
-                    <i class="material-icons">save</i>
-                </div>
-                <span class="button-title">Salvar Forma</span>
-            </button>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-salvar" class="main-button btn-vendas" style="margin-top: 15px; padding: 15px; flex: 4;">
+                    <span class="button-title">Salvar Forma</span>
+                </button>
+                <button id="btn-cancelar" style="margin-top: 15px; flex: 1; display: none; background: #e74c3c; color: white; border: none; border-radius: 15px; cursor: pointer;">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
         </div>
 
         <div style="width: 100%; margin-top: 20px;">
             <h2 style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">MÉTODOS ATIVOS</h2>
             <ul id="lista-pagamentos" style="list-style: none; padding: 0;">
-            </ul>
+                </ul>
         </div>
     </main>
 

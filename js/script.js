@@ -1,65 +1,87 @@
-// 1. Defina a URL no topo, fora de tudo!
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwh2i-qpbGkMTMwytyvToPxK0Z8PD1o9NdKY88UUkyo2mpvsdZMsAp4dSHGZIMUyPJ_2A/exec'; 
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwh2i-qpbGkMTMwytyvToPxK0Z8PD1o9NdKY88UUkyo2mpvsdZMsAp4dSHGZIMUyPJ_2A/exec';
 
-// 2. Função para carregar a lista
+// Carregar ao abrir
+window.onload = carregarFormasPagamento;
+
 function carregarFormasPagamento() {
     const listaUl = document.getElementById('lista-pagamentos');
-    if (!listaUl) return; // Segurança caso o elemento não exista na tela
+    listaUl.innerHTML = "<p>Carregando...</p>";
 
-    listaUl.innerHTML = "<p style='padding:10px;'>Carregando formas...</p>";
-
-    fetch(scriptURL) // Agora ele vai encontrar a variável definida lá no topo
+    fetch(scriptURL)
         .then(res => res.json())
         .then(dados => {
             listaUl.innerHTML = "";
             dados.forEach(item => {
                 const li = document.createElement('li');
-                li.style = "background: white; margin-bottom: 8px; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #2ecc71;";
+                li.style = "background: white; margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
                 li.innerHTML = `
-                    <span style="font-weight: bold; color: #2c3e50;">${item.nome}</span>
-                    <span style="font-size: 10px; color: #bdc3c7;">ID: ${item.id}</span>
+                    <div>
+                        <span style="font-weight: bold; color: #2c3e50; display: block;">${item.nome}</span>
+                        <small style="color: #95a5a6;">ID: ${item.id}</small>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="prepararEdicao(${item.id}, '${item.nome}')" style="background:none; border:none; color:#3498db; cursor:pointer;"><i class="material-icons">edit</i></button>
+                        <button onclick="excluirForma(${item.id})" style="background:none; border:none; color:#e74c3c; cursor:pointer;"><i class="material-icons">delete_outline</i></button>
+                    </div>
                 `;
                 listaUl.appendChild(li);
             });
-        })
-        .catch(err => {
-            listaUl.innerHTML = "<p style='color:red;'>Erro ao carregar lista.</p>";
-            console.error("Erro na leitura:", err);
         });
 }
 
-// 3. Chamar ao carregar a página
-window.onload = carregarFormasPagamento;
+function prepararEdicao(id, nome) {
+    document.getElementById('id-pagamento').value = id;
+    document.getElementById('nome-pagamento').value = nome;
+    document.getElementById('label-input').innerText = "Alterar Forma de Pagamento";
+    document.getElementById('btn-cancelar').style.display = "block";
+    document.getElementById('nome-pagamento').focus();
+}
 
-// 4. Lógica do Botão Salvar (já simplificada usando a mesma URL do topo)
+document.getElementById('btn-cancelar').onclick = function() {
+    limparFormulario();
+};
+
+function limparFormulario() {
+    document.getElementById('id-pagamento').value = "";
+    document.getElementById('nome-pagamento').value = "";
+    document.getElementById('label-input').innerText = "Nova Forma de Pagamento";
+    document.getElementById('btn-cancelar').style.display = "none";
+}
+
 document.getElementById('btn-salvar').addEventListener('click', function() {
-    const nomeForma = document.getElementById('nome-pagamento').value;
-    
-    if (!nomeForma) {
-        alert("Digite a forma de pagamento!");
-        return;
-    }
+    const id = document.getElementById('id-pagamento').value;
+    const nome = document.getElementById('nome-pagamento').value;
 
-    const btn = this;
-    btn.disabled = true;
-    btn.innerText = "Gravando...";
+    if (!nome) return alert("Digite o nome!");
+
+    const payload = {
+        action: id ? "update" : "create",
+        id: id,
+        nome: nome
+    };
 
     fetch(scriptURL, {
         method: 'POST',
-        body: JSON.stringify({ "nome": nomeForma })
+        body: JSON.stringify(payload)
     })
     .then(res => res.json())
     .then(data => {
         if (data.result === "success") {
-            alert("Cadastro efetuado com sucesso!");
-            document.getElementById('nome-pagamento').value = "";
-            carregarFormasPagamento(); // Atualiza a lista na hora!
+            alert("Operação realizada com sucesso!");
+            limparFormulario();
+            carregarFormasPagamento();
         } else {
             alert(data.message);
         }
-    })
-    .finally(() => {
-        btn.disabled = false;
-        btn.innerText = "Salvar Forma";
     });
 });
+
+function excluirForma(id) {
+    if (confirm("Deseja realmente excluir esta forma?")) {
+        fetch(scriptURL + "?action=delete&id=" + id)
+        .then(() => {
+            alert("Excluído com sucesso!");
+            carregarFormasPagamento();
+        });
+    }
+}
