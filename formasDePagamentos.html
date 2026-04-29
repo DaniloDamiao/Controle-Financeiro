@@ -29,15 +29,17 @@
             <input type="text" id="nome-pagamento" placeholder="Ex: Pix, Cartão de Crédito, Dinheiro" 
                    style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px;">
             
-            <div style="display: flex; gap: 10px;">
-                <button id="btn-salvar" class="main-button btn-vendas" style="margin-top: 15px; padding: 15px; flex: 4;">
-                    <span class="button-title">Salvar Forma</span>
-                </button>
-                <button id="btn-cancelar" style="margin-top: 15px; flex: 1; display: none; background: #e74c3c; color: white; border: none; border-radius: 15px; cursor: pointer;">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-        </div>
+            <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; width: 100%;">
+    <button id="btn-salvar-categoria" class="main-button btn-vendas" 
+            style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
+        <span class="button-title" style="font-size: 0.9rem;">Salvar Forma PGTO</span>
+    </button>
+
+    <button id="btn-cancelar" 
+            style="flex: 1; height: 45px; margin: 0; display: none; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; box-shadow: none;">
+        <i class="material-icons" style="font-size: 20px;">close</i>
+    </button>
+</div>
 
         <div style="width: 100%; margin-top: 20px;">
             <h2 style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">MÉTODOS ATIVOS</h2>

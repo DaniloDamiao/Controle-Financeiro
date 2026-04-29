@@ -7,11 +7,12 @@ function carregarCategorias() {
     if(!listaUl) return;
     listaUl.innerHTML = "<p>Carregando...</p>";
 
-    // Trocado para SUBMENU
     fetch(`${scriptURL}?tabName=SUBMENU`)
         .then(res => res.json())
         .then(dados => {
             listaUl.innerHTML = "";
+            if (!Array.isArray(dados)) return;
+            
             dados.forEach(item => {
                 const li = document.createElement('li');
                 li.style = "background: white; margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
@@ -30,6 +31,14 @@ function carregarCategorias() {
         });
 }
 
+// --- NOVO: EVENTO PARA O BOTÃO CANCELAR ---
+const btnCancelar = document.getElementById('btn-cancelar');
+if (btnCancelar) {
+    btnCancelar.onclick = function() {
+        limparFormulario();
+    };
+}
+
 document.getElementById('btn-salvar-categoria').addEventListener('click', function() {
     const id = document.getElementById('id-categoria').value;
     const nome = document.getElementById('nome-categoria').value;
@@ -38,7 +47,7 @@ document.getElementById('btn-salvar-categoria').addEventListener('click', functi
 
     const payload = {
         action: id ? "update" : "create",
-        tabName: "SUBMENU", // Trocado para SUBMENU
+        tabName: "SUBMENU",
         id: id,
         nome: nome
     };
@@ -50,7 +59,7 @@ document.getElementById('btn-salvar-categoria').addEventListener('click', functi
     .then(res => res.json())
     .then(data => {
         if (data.result === "success") {
-            alert("Categoria salva no SUBMENU!");
+            alert("Categoria salva com sucesso!");
             limparFormulario();
             carregarCategorias();
         } else {
@@ -60,8 +69,7 @@ document.getElementById('btn-salvar-categoria').addEventListener('click', functi
 });
 
 function excluirCategoria(id) {
-    if (confirm("Deseja excluir esta categoria do SUBMENU?")) {
-        // Trocado para SUBMENU
+    if (confirm("Deseja excluir esta categoria?")) {
         fetch(`${scriptURL}?action=delete&id=${id}&tabName=SUBMENU`)
         .then(() => {
             alert("Excluída!");
@@ -73,14 +81,25 @@ function excluirCategoria(id) {
 function limparFormulario() {
     document.getElementById('id-categoria').value = "";
     document.getElementById('nome-categoria').value = "";
-    document.getElementById('btn-cancelar').style.display = "none";
-    document.getElementById('label-input').innerText = "Nova Categoria";
+    document.getElementById('btn-cancelar').style.display = "flex";
+    
+    // Ajuste de UI para ficar intuitivo
+    const label = document.getElementById('label-input');
+    if (label) label.innerText = "Nova Categoria";
+    
+    document.getElementById('nome-categoria').focus();
 }
+
 
 function prepararEdicao(id, nome) {
     document.getElementById('id-categoria').value = id;
     document.getElementById('nome-categoria').value = nome;
-    document.getElementById('btn-cancelar').style.display = "block";
-    document.getElementById('label-input').innerText = "Alterar Categoria";
+    document.getElementById('btn-cancelar').style.display = "flex";
+    
+    const label = document.getElementById('label-input');
+    if (label) label.innerText = "Alterar Categoria";
+    
     document.getElementById('nome-categoria').focus();
+    // Rola para o topo suavemente para o usuário ver que o campo mudou
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }

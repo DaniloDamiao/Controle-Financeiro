@@ -52,7 +52,7 @@ function prepararEdicao(id, nome) {
     document.getElementById('id-pagamento').value = id;
     document.getElementById('nome-pagamento').value = nome;
     document.getElementById('label-input').innerText = "Alterar Forma de Pagamento";
-    document.getElementById('btn-cancelar').style.display = "block";
+    document.getElementById('btn-cancelar').style.display = "flex";
     document.getElementById('nome-pagamento').focus();
 }
 

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DFL - Cadastro de Contas</title>
-    
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css"> 
 </head>
@@ -44,7 +43,7 @@
             </div>
 
             <div class="input-group">
-                <label>VINCULAR AO SUBMENU</label>
+                <label>CATEGORIAS</label>
                 <select id="select-submenu" class="input-estilizado">
                     <option value="">Selecione...</option>
                 </select>
@@ -56,15 +55,17 @@
                 <input type="text" id="obs2" placeholder="Observação 2" class="input-estilizado">
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <button id="btn-salvar-conta" class="main-button btn-historico" style="margin-top: 15px; flex: 4;">
-                    <span class="button-title">Salvar Conta</span>
-                </button>
-                <button id="btn-cancelar" style="margin-top: 15px; flex: 1; display: none; background: #e74c3c; color: white; border: none; border-radius: 15px; cursor: pointer;">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-        </div>
+            <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; width: 100%;">
+    <button id="btn-salvar-categoria" class="main-button btn-historico" 
+            style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
+        <span class="button-title" style="font-size: 0.9rem;">Salvar Conta</span>
+    </button>
+
+    <button id="btn-cancelar" 
+            style="flex: 1; height: 45px; margin: 0; display: none; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; box-shadow: none;">
+        <i class="material-icons" style="font-size: 20px;">close</i>
+    </button>
+</div>
 
         <div style="width: 100%;">
             <h2 style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">CONTAS CADASTRADAS</h2>
