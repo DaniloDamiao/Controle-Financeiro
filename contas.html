@@ -23,6 +23,8 @@
 
     <main class="content-area" style="justify-content: flex-start; padding: 20px;">
         <div class="form-container" style="width: 100%; margin-bottom: 30px;">
+            <h2 id="label-input" style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">Nova Conta</h2>
+            
             <input type="hidden" id="id-conta">
             
             <div class="input-group">
@@ -56,16 +58,17 @@
             </div>
 
             <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; width: 100%;">
-    <button id="btn-salvar-categoria" class="main-button btn-historico" 
-            style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
-        <span class="button-title" style="font-size: 0.9rem;">Salvar Conta</span>
-    </button>
+                <button id="btn-salvar-conta" class="main-button btn-historico" 
+                        style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
+                    <span class="button-title" style="font-size: 0.9rem;">Salvar Conta</span>
+                </button>
 
-    <button id="btn-cancelar" 
-            style="flex: 1; height: 45px; margin: 0; display: none; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; box-shadow: none;">
-        <i class="material-icons" style="font-size: 20px;">close</i>
-    </button>
-</div>
+                <button id="btn-cancelar" 
+                        style="flex: 1; height: 45px; margin: 0; display: none; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; box-shadow: none;">
+                    <i class="material-icons" style="font-size: 20px;">close</i>
+                </button>
+            </div>
+        </div>
 
         <div style="width: 100%;">
             <h2 style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">CONTAS CADASTRADAS</h2>
@@ -75,7 +78,7 @@
 
     <footer class="app-footer">
         <p class="footer-text">© 2026 DFL Gestão | Danilo Damião</p>
-    </footer>
+    </footer-area>
 </div>
 
 <script src="./js/contas.js"></script>

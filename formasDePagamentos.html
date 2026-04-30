@@ -21,38 +21,38 @@
         <p class="app-subtitle">DFL - Gestão Inteligente de Gastos</p>
     </header>
 
-    <main class="content-area" style="justify-content: flex-start;">
-        <div style="width: 100%; margin-bottom: 30px;">
+    <main class="content-area" style="justify-content: flex-start; padding: 20px;">
+        <div class="form-container" style="width: 100%; margin-bottom: 30px;">
             <input type="hidden" id="id-pagamento">
             
             <label id="label-input" style="font-weight: bold; display: block; margin-bottom: 8px;">Nova Forma de Pagamento</label>
             <input type="text" id="nome-pagamento" placeholder="Ex: Pix, Cartão de Crédito, Dinheiro" 
-                   style="width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px;">
+                   class="input-estilizado" style="width: 100%; box-sizing: border-box;">
             
             <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; width: 100%;">
-    <button id="btn-salvar-categoria" class="main-button btn-vendas" 
-            style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
-        <span class="button-title" style="font-size: 0.9rem;">Salvar Forma PGTO</span>
-    </button>
+                <button id="btn-salvar-pagamento" class="main-button btn-vendas" 
+                        style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
+                    <span class="button-title" style="font-size: 0.9rem;">Salvar Forma PGTO</span>
+                </button>
 
-    <button id="btn-cancelar" 
-            style="flex: 1; height: 45px; margin: 0; display: none; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; box-shadow: none;">
-        <i class="material-icons" style="font-size: 20px;">close</i>
-    </button>
-</div>
+                <button id="btn-cancelar" 
+                        style="flex: 1; height: 45px; margin: 0; display: none; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; box-shadow: none;">
+                    <i class="material-icons" style="font-size: 20px;">close</i>
+                </button>
+            </div>
+        </div>
 
-        <div style="width: 100%; margin-top: 20px;">
+        <div style="width: 100%;">
             <h2 style="font-size: 16px; color: #7f8c8d; margin-bottom: 15px;">MÉTODOS ATIVOS</h2>
-            <ul id="lista-pagamentos" style="list-style: none; padding: 0;">
-                </ul>
+            <ul id="lista-pagamentos" style="list-style: none; padding: 0;"></ul>
         </div>
     </main>
 
     <footer class="app-footer">
-        <p class="footer-text">© 2024 Pro Estoque Max | Gestão Total</p>
+        <p class="footer-text">© 2026 DFL Gestão | Danilo Damião</p>
     </footer>
 </div>
 
-<script src="./js/script.js"></script>
+<script src="./js/pagamentos.js"></script>
 </body>
 </html>

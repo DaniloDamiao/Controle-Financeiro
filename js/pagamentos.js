@@ -1,26 +1,25 @@
 const scriptURL = 'https://script.google.com/macros/s/AKfycbwh2i-qpbGkMTMwytyvToPxK0Z8PD1o9NdKY88UUkyo2mpvsdZMsAp4dSHGZIMUyPJ_2A/exec';
 
-// Funções auxiliares para manter o padrão
 const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
 const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ""; };
 
 window.onload = function() {
-    carregarCategorias();
+    carregarListaPagamentos();
     
-    // Adiciona o evento de clique ao botão cancelar
+    // Adiciona o evento de clique ao botão cancelar assim que a página carrega
     const btnCancelar = document.getElementById('btn-cancelar');
     if (btnCancelar) {
         btnCancelar.addEventListener('click', cancelarEdicao);
     }
 };
 
-// --- FUNÇÃO DE LEITURA (PADRÃO PAGAMENTOS) ---
-function carregarCategorias() {
-    const listaUl = document.getElementById('lista-categorias');
+// --- FUNÇÃO DE LEITURA ---
+function carregarListaPagamentos() {
+    const listaUl = document.getElementById('lista-pagamentos');
     if (!listaUl) return;
-    listaUl.innerHTML = "<p style='color: gray;'>Carregando categorias...</p>";
+    listaUl.innerHTML = "<p style='color: gray;'>Carregando métodos...</p>";
 
-    fetch(`${scriptURL}?tabName=SUBMENU`)
+    fetch(`${scriptURL}?tabName=FORMA PGMT`)
         .then(res => res.json())
         .then(dados => {
             listaUl.innerHTML = "";
@@ -32,37 +31,31 @@ function carregarCategorias() {
             dados.forEach(item => {
                 const li = document.createElement('li');
                 li.style = "background: white; margin-bottom: 10px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);";
-                
-                // Transforma o objeto em string para passar para a função de edição
                 const dadosString = JSON.stringify(item).replace(/'/g, "&apos;");
 
                 li.innerHTML = `
                     <span style="font-weight: bold; color: #2c3e50;">${item.nome}</span>
                     <div style="display: flex; gap: 10px;">
-                        <button onclick='prepararEdicaoCategoria(${dadosString})' style="background:none; border:none; color:#3498db; cursor:pointer;"><i class="material-icons">edit</i></button>
-                        <button onclick="excluirCategoria(${item.id})" style="background:none; border:none; color:#e74c3c; cursor:pointer;"><i class="material-icons">delete_outline</i></button>
+                        <button onclick='prepararEdicaoPagamento(${dadosString})' style="background:none; border:none; color:#3498db; cursor:pointer;"><i class="material-icons">edit</i></button>
+                        <button onclick="excluirPagamento(${item.id})" style="background:none; border:none; color:#e74c3c; cursor:pointer;"><i class="material-icons">delete_outline</i></button>
                     </div>`;
                 listaUl.appendChild(li);
             });
-        })
-        .catch(err => {
-            console.error("Erro ao carregar:", err);
-            listaUl.innerHTML = "<p style='color: red;'>Erro de conexão.</p>";
         });
 }
 
-// --- FUNÇÃO DE GRAVAÇÃO (PADRÃO PAGAMENTOS) ---
-const btnSalvar = document.getElementById('btn-salvar-categoria');
+// --- FUNÇÃO DE GRAVAÇÃO ---
+const btnSalvar = document.getElementById('btn-salvar-pagamento');
 if (btnSalvar) {
     btnSalvar.addEventListener('click', function() {
-        const idVal = getVal('id-categoria');
-        const nomeVal = getVal('nome-categoria');
+        const idVal = getVal('id-pagamento');
+        const nomeVal = getVal('nome-pagamento');
 
-        if (!nomeVal) { alert("Digite o nome da categoria!"); return; }
+        if (!nomeVal) { alert("Digite o nome!"); return; }
 
         const payload = {
             action: idVal ? "update" : "create",
-            tabName: "SUBMENU",
+            tabName: "FORMA PGMT",
             id: idVal,
             nome: nomeVal.toUpperCase()
         };
@@ -74,60 +67,50 @@ if (btnSalvar) {
         .then(res => res.json())
         .then(data => {
             if (data.result === "success") {
-                alert("Categoria salva com sucesso!");
-                location.reload(); // Mantém o padrão de recarregar a página
+                alert("Gravado com sucesso!");
+                location.reload();
             } else {
                 alert("Erro: " + data.message);
                 resetBtn();
             }
-        })
-        .catch(err => {
-            console.error("Erro no envio:", err);
-            alert("Erro de conexão.");
-            resetBtn();
-        });
+        }).catch(() => { alert("Erro de conexão."); resetBtn(); });
     });
 }
 
-// --- FUNÇÃO DE CANCELAR (CORRIGIDA) ---
+// --- FUNÇÃO DE CANCELAR (RESETA O FORMULÁRIO) ---
 function cancelarEdicao() {
-    setVal('id-categoria', "");
-    setVal('nome-categoria', "");
+    setVal('id-pagamento', "");
+    setVal('nome-pagamento', "");
     
+    // Esconde o botão cancelar
     const btnCancelar = document.getElementById('btn-cancelar');
     if (btnCancelar) btnCancelar.style.display = "none";
     
+    // Volta o título para o original
     const label = document.getElementById('label-input');
-    if (label) label.innerText = "Nova Categoria";
+    if (label) label.innerText = "Nova Forma de Pagamento";
     
+    // Reseta o botão de salvar
     resetBtn();
 }
 
 function resetBtn() {
     if (btnSalvar) {
-        btnSalvar.innerText = "Salvar Categoria";
+        btnSalvar.innerText = "Salvar Forma PGTO";
         btnSalvar.disabled = false;
     }
 }
 
-// --- FUNÇÃO DE EDIÇÃO (PADRÃO OBJETO) ---
-function prepararEdicaoCategoria(item) {
-    setVal('id-categoria', item.id);
-    setVal('nome-categoria', item.nome);
-    
-    const btnCancelar = document.getElementById('btn-cancelar');
-    if (btnCancelar) btnCancelar.style.display = "flex";
-    
-    const label = document.getElementById('label-input');
-    if (label) label.innerText = "ALTERAR CATEGORIA";
-    
+function prepararEdicaoPagamento(item) {
+    setVal('id-pagamento', item.id);
+    setVal('nome-pagamento', item.nome);
+    if (document.getElementById('btn-cancelar')) document.getElementById('btn-cancelar').style.display = "flex";
+    if (document.getElementById('label-input')) document.getElementById('label-input').innerText = "ALTERAR PAGAMENTO";
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- FUNÇÃO DE EXCLUSÃO ---
-function excluirCategoria(id) {
-    if (confirm("Deseja realmente excluir esta categoria?")) {
-        fetch(`${scriptURL}?action=delete&id=${id}&tabName=SUBMENU`)
-        .then(() => location.reload());
+function excluirPagamento(id) {
+    if (confirm("Deseja realmente excluir esta forma de pagamento?")) {
+        fetch(`${scriptURL}?action=delete&id=${id}&tabName=FORMA PGMT`).then(() => location.reload());
     }
 }
