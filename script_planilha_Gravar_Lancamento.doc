@@ -1,0 +1,191 @@
+function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var data = JSON.parse(e.postData.contents);
+    var sheet = ss.getSheetByName(data.tabName); 
+    
+    if (!sheet) throw new Error("Aba não encontrada: " + data.tabName);
+    
+    // --- LÓGICA ESPECÍFICA PARA LANÇAMENTOS (ESTOQUE PRO) ---
+    if (data.tabName === "LANÇAMENTO") {
+      return processarLancamento(sheet, data);
+    }
+
+    // --- LÓGICA ORIGINAL PARA CADASTROS (CONTAS E OUTROS) ---
+    var nome = data.nome ? data.nome.toUpperCase().trim() : "";
+    var linhaInicial = (data.tabName === "CONTAS") ? 3 : 2;
+    var colID = (data.tabName === "CONTAS") ? 2 : 3;
+
+    if (data.action === "update") {
+      var ultimaL = sheet.getLastRow();
+      if (ultimaL >= linhaInicial) {
+        var rangeIds = sheet.getRange(linhaInicial, colID, ultimaL - (linhaInicial - 1), 1);
+        var dadosIds = rangeIds.getValues();
+        for (var i = 0; i < dadosIds.length; i++) {
+          if (dadosIds[i][0] == data.id) {
+            var linhaAlvo = i + linhaInicial;
+            sheet.getRange(linhaAlvo, colID + 1).setValue(nome);
+            if (data.tabName === "CONTAS") {
+              sheet.getRange(linhaAlvo, 4).setValue(data.tipo || "");
+              sheet.getRange(linhaAlvo, 5).setValue(data.submenu || "");
+              sheet.getRange(linhaAlvo, 6).setValue(data.obs1 || "");
+              sheet.getRange(linhaAlvo, 7).setValue(data.obs2 || "");
+            }
+            return criarRespostaJSON({"result": "success"});
+          }
+        }
+      }
+      return criarRespostaJSON({"result": "error", "message": "ID não encontrado"});
+    }
+
+    // CREATE (Inclusão Original)
+    var ultimaLinha = sheet.getLastRow();
+    var proximoID = 1;
+    if (ultimaLinha >= linhaInicial) {
+      var ids = sheet.getRange(linhaInicial, colID, ultimaLinha - (linhaInicial - 1), 1).getValues();
+      var idsNumericos = ids.map(function(row) { return row[0]; }).filter(function(val) { return !isNaN(parseFloat(val)) && isFinite(val); });
+      if (idsNumericos.length > 0) proximoID = Math.max.apply(null, idsNumericos) + 1;
+    }
+
+    if (data.tabName === "CONTAS") {
+      sheet.appendRow([null, proximoID, nome, data.tipo || "", data.submenu || "", data.obs1 || "", data.obs2 || ""]);
+    } else {
+      sheet.appendRow([null, null, proximoID, nome]);
+    }
+    return criarRespostaJSON({"result": "success", "id": proximoID});
+
+  } catch (err) {
+    return criarRespostaJSON({"result": "error", "message": err.toString()});
+  }
+}
+
+// --- FUNÇÃO AUXILIAR PARA MANTER A ESTRUTURA DO SEU VBA ---
+function processarLancamento(sheet, data) {
+  var ultimaLinha = sheet.getLastRow();
+  var novoSeq = 1;
+  
+  // 1. Busca o último ID na coluna D (4) de forma física
+  if (ultimaLinha >= 4) {
+    var IDs = sheet.getRange(4, 4, ultimaLinha - 3, 1).getValues();
+    var maxID = 0;
+    for (var j = 0; j < IDs.length; j++) {
+      var val = Number(IDs[j][0]);
+      if (!isNaN(val) && val > maxID) maxID = val;
+    }
+    novoSeq = maxID + 1;
+  }
+
+  var numParcelas = parseInt(data.parcelas) || 1;
+  var valorTotal = parseFloat(data.valorPrevisto) || 0;
+  var valorParcela = valorTotal / numParcelas;
+  
+  var partes = data.vencimento.split('-');
+  var ano = parseInt(partes[0]);
+  var mes = parseInt(partes[1]) - 1;
+  var dia = parseInt(partes[2]);
+
+  var isMensal = data.repeticaoMensal;
+  var intervaloDias = parseInt(data.prazoDias) || 30;
+
+  // 2. Determina a linha física real para gravação
+  var linhaDestino = sheet.getLastRow() + 1;
+
+  for (var i = 0; i < numParcelas; i++) {
+    // Mantemos o Meio-Dia para segurança de fuso horário
+    var dataVencimentoParcela = new Date(ano, mes, dia, 12, 0, 0);
+
+    if (isMensal) {
+      dataVencimentoParcela.setMonth(mes + i);
+    } else {
+      dataVencimentoParcela.setDate(dia + (i * intervaloDias));
+    }
+
+    var infoParcela = numParcelas > 1 ? (i + 1) + "/" + numParcelas : "À VISTA";
+    
+    var novaLinha = [
+      null, null, null, 
+      novoSeq,          
+      data.emissao,     
+      data.formaPgmt,   
+      data.categoria,   
+      data.conta,       
+      data.descricao,   
+      dataVencimentoParcela, // O objeto Date aqui
+      valorParcela,     
+      infoParcela,      
+      data.dataPagamento || "", 
+      data.valorRealizado || "", 
+      data.situacao || "À VENCER" 
+    ];
+
+    // 3. GRAVAÇÃO FÍSICA (Não afetada pelo filtro visual)
+    // Usamos o range específico para forçar a escrita na célula
+    var range = sheet.getRange(linhaDestino, 1, 1, 15);
+    range.setValues([novaLinha]);
+    
+    // 4. FORMATAÇÃO EXPLÍCITA (Essencial para a data aparecer com filtro)
+    // Forçamos a coluna 10 (J) a ser Data e a 11 (K) a ser Moeda
+    sheet.getRange(linhaDestino, 10).setNumberFormat("dd/mm/yyyy");
+    sheet.getRange(linhaDestino, 11).setNumberFormat("#,##0.00");
+    
+    linhaDestino++;
+  }
+
+  // O FILTRO É PRESERVADO (Não chamei sheet.getFilter().remove())
+  return criarRespostaJSON({"result": "success", "id": novoSeq});
+}
+
+function doGet(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var tabName = e.parameter.tabName;
+    var sheet = ss.getSheetByName(tabName);
+    if (!sheet) return criarRespostaJSON({"error": "Aba não encontrada"});
+    
+    var linhaInicial = (tabName === "CONTAS") ? 3 : (tabName === "LANÇAMENTO" ? 4 : 2);
+    var colID = (tabName === "CONTAS") ? 2 : (tabName === "LANÇAMENTO" ? 4 : 3);
+    var ultimaLinha = sheet.getLastRow();
+
+    // LÓGICA DE EXCLUSÃO (Original)
+    if (e.parameter.action === 'delete') {
+      var numLinhasExc = Math.max(1, ultimaLinha - (linhaInicial - 1));
+      var dadosExclusao = sheet.getRange(linhaInicial, colID, numLinhasExc, 1).getValues();
+      for (var i = 0; i < dadosExclusao.length; i++) {
+        if (dadosExclusao[i][0] == e.parameter.id) {
+          sheet.deleteRow(i + linhaInicial);
+          return ContentService.createTextOutput("Sucesso");
+        }
+      }
+    }
+
+    // LÓGICA DE LISTAGEM (Adaptada para incluir LANÇAMENTOS)
+    if (ultimaLinha < linhaInicial) return criarRespostaJSON([]);
+    var numLinhas = ultimaLinha - (linhaInicial - 1);
+    
+    // Define quantas colunas ler baseado na aba
+    var qtdCol = (tabName === "CONTAS") ? 6 : (tabName === "LANÇAMENTO" ? 12 : 2);
+    var dados = sheet.getRange(linhaInicial, colID, numLinhas, qtdCol).getValues();
+    
+    var lista = [];
+    for (var j = 0; j < dados.length; j++) {
+      var r = dados[j];
+      if (r[0] !== "" && r[0] !== null) {
+        if (tabName === "CONTAS") {
+          lista.push({ id: r[0], nome: r[1], tipo: r[2], submenu: r[3], obs1: r[4], obs2: r[5] });
+        } else if (tabName === "LANÇAMENTO") {
+          // Retorna o objeto completo do lançamento conforme seu VBA
+          lista.push({ id: r[0], data: r[1], forma: r[2], categoria: r[3], conta: r[4], valor: r[7], situacao: r[11] });
+        } else {
+          lista.push({ id: r[0], nome: r[1] });
+        }
+      }
+    }
+    return criarRespostaJSON(lista);
+  } catch (err) {
+    return criarRespostaJSON({"error": err.toString()});
+  }
+}
+
+function criarRespostaJSON(objeto) {
+  return ContentService.createTextOutput(JSON.stringify(objeto)).setMimeType(ContentService.MimeType.JSON);
+}

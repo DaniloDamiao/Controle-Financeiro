@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DFL Gestão - Lançamentos</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <header class="app-header">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <a href="index.html" style="text-decoration: none; color: var(--dark);"><i
+                        class="material-icons">arrow_back</i></a>
+                <h1 class="app-title">LANÇAMENTO</h1>
+                <div style="width: 24px;"></div>
+            </div>
+            <p class="app-subtitle">Novo Registro de Despesa/Receita</p>
+        </header>
+
+        <main class="content-area tela-lancamentos" style="padding: 15px; justify-content: flex-start;">
+            <div class="form-container" style="width: 100%; max-width: 500px; background: none; box-shadow: none;">
+                <input type="hidden" id="id-lancamento">
+
+                <!-- LINHA SUPERIOR: SWITCH TIPO + EMISSÃO -->
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: #ffffff; padding: 12px; border-radius: 18px; border: 1px solid #e0e0e0;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div>
+                            <span id="label-tipo-texto" style="font-size: 14px; font-weight: bold; color: #e74c3c;">À
+                                PRAZO</span>
+                            <p style="font-size: 10px; color: #7f8c8d; margin: 0;">Selecione À Prazo | A Vista</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="switch-tipo" onchange="toggleTipoSwitch()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div style="width: 45%;">
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 5px;">EMISSÃO</label>
+                        <input type="date" id="data-emissao" class="input-estilizado" style="margin-bottom: 0;">
+                    </div>
+                </div>
+
+                <!-- CONTA -->
+                <label class="form-label">CONTA</label>
+                <select id="select-conta" class="input-estilizado">
+                    <option value="">Selecione...</option>
+                </select>
+
+                <!-- DESCRIÇÃO (ID Ajustado para o JS) -->
+                <label class="form-label">DESCRIÇÃO</label>
+                <input type="text" id="descricao-lancamento" class="input-estilizado" placeholder="Ex: Compra mensal">
+
+                <!-- CATEGORIA -->
+                <label class="form-label">CATEGORIA</label>
+                <select id="select-categoria" class="input-estilizado">
+                    <option value="">Selecione...</option>
+                </select>
+
+                <!-- FORMA DE PAGAMENTO -->
+                <label class="form-label">FORMA DE PAGAMENTO</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                    <select id="select-pagamento" class="input-estilizado" style="flex: 1; margin-bottom: 0;">
+                        <option value="">Selecione...</option>
+                    </select>
+                    <button type="button" onclick="carregarSelects()"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: none; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <i class="material-icons" style="color: #64748b; font-size: 20px;">refresh</i>
+                    </button>
+                </div>
+
+                <!-- VALOR TOTAL -->
+                <label class="form-label">VALOR TOTAL</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px;">
+                    <input type="number" step="0.01" id="valor-total" class="input-estilizado"
+                        style="flex: 1; margin-bottom: 0;" placeholder="0,00">
+                    <button type="button" onclick="abrirCalculadora()"
+                        style="width: 40px; height: 40px; border-radius: 50%; border: none; background-color: #f0f2f5; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <i class="material-icons" style="color: #27ae60; font-size: 20px;">calculate</i>
+                    </button>
+                </div>
+
+                <!-- SEÇÃO DINÂMICA -->
+                <div id="secao-parcelas"
+                    style="background: #f1f6f9; padding: 15px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                        <span
+                            style="font-size: 12px; font-weight: bold; color: #334155; text-transform: uppercase;">Repetição
+                            Mensal</span>
+                        <label class="switch">
+                            <input type="checkbox" id="check-mensal" checked onchange="toggleMensalSwitch()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <!-- Coluna Data -->
+                        <div style="flex: 2;">
+                            <label id="label-data" class="form-label"
+                                style="font-size: 10px; margin-bottom: 5px; display: block;">DATA 1ª PARCELA</label>
+                            <input type="date" id="data-vencimento" class="input-estilizado"
+                                style="margin-bottom: 0; width: 100%;">
+                        </div>
+
+                        <!-- Coluna Vezes (ID Ajustado para input-vezes) -->
+                        <div id="container-vezes" style="flex: 1; display: flex; flex-direction: column;">
+                            <label class="form-label"
+                                style="font-size: 10px; margin-bottom: 5px; text-align: center; display: block;">VEZES</label>
+                            <input type="number" id="input-vezes" value="1" class="input-estilizado"
+                                style="margin-bottom: 0; text-align: center; padding: 8px 0;">
+                        </div>
+
+                        <!-- Coluna Dias -->
+                        <div id="div-prazo-dias" style="flex: 1; display: none; flex-direction: column;">
+                            <label class="form-label"
+                                style="font-size: 10px; margin-bottom: 5px; text-align: center; display: block;">DIAS</label>
+                            <input type="number" id="prazo-dias" value="0" class="input-estilizado"
+                                style="margin-bottom: 0; text-align: center; padding: 8px 0;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTÕES DE AÇÃO (Com onclick adicionado) -->
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 15px; width: 100%;">
+                    <button id="btn-salvar-lancamento" class="main-button btn-vendas btn-save"
+                        onclick="realizarLancamento()"
+                        style="flex: 4; height: 45px; margin: 0; padding: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; box-shadow: none;">
+                        <span class="button-title" style="font-size: 0.9rem;">Lançar Receitas | Despesas</span>
+                    </button>
+
+                    <button id="btn-cancelar" onclick="limparFormulario()"
+                        style="flex: 1; height: 45px; margin: 0; background: #e74c3c; color: white; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: none;">
+                        <i class="material-icons" style="font-size: 20px;">close</i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/lancamentos.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var data = JSON.parse(e.postData.contents);
+    var sheet = ss.getSheetByName(data.tabName); 
+    
+    if (!sheet) throw new Error("Aba não encontrada: " + data.tabName);
+    
+    var nome = data.nome ? data.nome.toUpperCase().trim() : "";
+    var linhaInicial = (data.tabName === "CONTAS") ? 3 : 2;
+    var colID = (data.tabName === "CONTAS") ? 2 : 3;
+
+    // --- LÓGICA DE ALTERAÇÃO (UPDATE) ---
+    if (data.action === "update") {
+      var ultimaL = sheet.getLastRow();
+      if (ultimaL >= linhaInicial) {
+        var rangeIds = sheet.getRange(linhaInicial, colID, ultimaL - (linhaInicial - 1), 1);
+        var dadosIds = rangeIds.getValues();
+        
+        for (var i = 0; i < dadosIds.length; i++) {
+          if (dadosIds[i][0] == data.id) {
+            var linhaAlvo = i + linhaInicial;
+            
+            // Grava o Nome (Coluna C)
+            sheet.getRange(linhaAlvo, colID + 1).setValue(nome);
+            
+            if (data.tabName === "CONTAS") {
+              sheet.getRange(linhaAlvo, 4).setValue(data.tipo || "");
+              sheet.getRange(linhaAlvo, 5).setValue(data.submenu || "");
+              sheet.getRange(linhaAlvo, 6).setValue(data.obs1 || "");
+              sheet.getRange(linhaAlvo, 7).setValue(data.obs2 || "");
+            }
+            return criarRespostaJSON({"result": "success"});
+          }
+        }
+      }
+      return criarRespostaJSON({"result": "error", "message": "ID não encontrado"});
+    }
+
+    // --- LÓGICA DE INCLUSÃO (CREATE) ---
+    var ultimaLinha = sheet.getLastRow();
+    var proximoID = 1;
+
+    if (ultimaLinha >= linhaInicial) {
+      var ids = sheet.getRange(linhaInicial, colID, ultimaLinha - (linhaInicial - 1), 1).getValues();
+      var idsNumericos = ids.map(function(row) { return row[0]; })
+                            .filter(function(val) { return !isNaN(parseFloat(val)) && isFinite(val); });
+      if (idsNumericos.length > 0) {
+        proximoID = Math.max.apply(null, idsNumericos) + 1;
+      }
+    }
+
+    if (data.tabName === "CONTAS") {
+      sheet.appendRow([null, proximoID, nome, data.tipo || "", data.submenu || "", data.obs1 || "", data.obs2 || ""]);
+    } else {
+      sheet.appendRow([null, null, proximoID, nome]);
+    }
+
+    return criarRespostaJSON({"result": "success", "id": proximoID});
+
+  } catch (err) {
+    return criarRespostaJSON({"result": "error", "message": err.toString()});
+  }
+}
+
+function criarRespostaJSON(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var tabName = e.parameter.tabName;
+    var sheet = ss.getSheetByName(tabName);
+    
+    if (!sheet) return criarRespostaJSON({"error": "Aba não encontrada"});
+    
+    var linhaInicial = (tabName === "CONTAS") ? 3 : 2;
+    var colID = (tabName === "CONTAS") ? 2 : 3;
+    var ultimaLinha = sheet.getLastRow();
+
+    // --- LÓGICA DE EXCLUSÃO ---
+    if (e.parameter.action === 'delete') {
+      var numLinhasExc = Math.max(1, ultimaLinha - (linhaInicial - 1));
+      var dadosExclusao = sheet.getRange(linhaInicial, colID, numLinhasExc, 1).getValues();
+      for (var i = 0; i < dadosExclusao.length; i++) {
+        if (dadosExclusao[i][0] == e.parameter.id) {
+          sheet.deleteRow(i + linhaInicial);
+          return ContentService.createTextOutput("Sucesso");
+        }
+      }
+    }
+
+    // --- LÓGICA DE LISTAGEM ---
+    if (ultimaLinha < linhaInicial) return criarRespostaJSON([]);
+
+    var numLinhas = ultimaLinha - (linhaInicial - 1);
+    
+    // Se for CONTAS, pegamos 6 colunas (ID, Nome, Tipo, Submenu, Obs1, Obs2)
+    // Se for outra aba, pegamos apenas 2 (ID e Nome)
+    var qtdColunasParaLer = (tabName === "CONTAS") ? 6 : 2;
+    var dados = sheet.getRange(linhaInicial, colID, numLinhas, qtdColunasParaLer).getValues();
+    
+    var lista = [];
+    for (var j = 0; j < dados.length; j++) {
+      var linha = dados[j];
+      if (linha[0] !== "" && linha[0] !== null) {
+        if (tabName === "CONTAS") {
+          lista.push({
+            id: linha[0],
+            nome: linha[1],
+            tipo: linha[2],
+            submenu: linha[3],
+            obs1: linha[4],
+            obs2: linha[5]
+          });
+        } else {
+          lista.push({
+            id: linha[0],
+            nome: linha[1]
+          });
+        }
+      }
+    }
+
+    return criarRespostaJSON(lista);
+
+  } catch (err) {
+    return criarRespostaJSON({"error": err.toString()});
+  }
+}
+
+function criarRespostaJSON(objeto) {
+  return ContentService.createTextOutput(JSON.stringify(objeto))
+         .setMimeType(ContentService.MimeType.JSON);
+}
